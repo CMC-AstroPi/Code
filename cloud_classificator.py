@@ -73,10 +73,8 @@ def main():
     Xdata = np.concatenate((Xlow, Xhigh, Xother), axis=0)
     ydata = np.concatenate((ylow, yhigh, yother), axis=0)
 
-    Xtrain, _, Ytrain, _ = train_test_split(Xdata, ydata, test_size = 0.30) 
-
     clf = RandomForestClassifier(n_estimators = 100, max_depth=8)   
-    clf.fit(Xtrain, Ytrain) 
+    clf.fit(Xdata, ydata) 
     joblib.dump(clf, './random_forest.joblib' )
 # -------------------------------------------------------
 
