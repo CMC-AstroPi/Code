@@ -217,13 +217,13 @@ def makePhoto():
         # machine learning
         try:
             initial_time = getTimer()
-            value = machineLearning(calculate_areascaling(nameUltimatePhoto))
+            value = machineLearning(calculate_areascaling(nameUltimatePhoto))[0]
             final_time = getTimer()
             file_info_time.info(', %s, %s, %s',str(initial_time), str(final_time), str(final_time-initial_time))
 
-            if(value == 1):
+            if(value == 1.):
                 new_name = 'low_clouds'
-            elif(value==2):
+            elif(value==2.):
                 new_name = 'high_clouds'
             else:
                 new_name = 'other'
