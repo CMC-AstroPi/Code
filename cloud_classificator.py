@@ -32,7 +32,7 @@ def calculate_areascaling(imagefile, plot = False):
     gray_img = cv.cvtColor(cropped, cv.COLOR_BGR2GRAY)
     img_area = np.shape(gray_img)[0]*np.shape(gray_img)[1]
     ret,thresh = cv.threshold(gray_img,130,255,cv.THRESH_BINARY)
-    contours, _ = cv.findContours(thresh, cv.RETR_LIST, cv.CHAIN_APPROX_NONE )
+    _, contours, _ = cv.findContours(thresh, cv.RETR_LIST, cv.CHAIN_APPROX_NONE )
     contours = [c for c in contours if cv.arcLength(c,False)>50]
     if plot:
         cv.drawContours(cropped, contours, -1, (0, 255, 0), 3)
