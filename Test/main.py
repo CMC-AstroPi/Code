@@ -208,7 +208,7 @@ def makePhoto():
     try:
         initial_time = getTimer()
         camera.capture(nameUltimatePhoto)
-        times.append(getTimer() - initial_time)
+        times.append(str(getTimer() - initial_time))
     except Exception as e:
         file_info_error.error("photo capture error")
 
@@ -217,7 +217,7 @@ def makePhoto():
     try:
         initial_time = getTimer()
         v_day = is_day(img)
-        times.append(getTimer() - initial_time)
+        times.append(str(getTimer() - initial_time))
     except Exception as e:
             file_info_error.error("is_day error")
 
@@ -227,11 +227,11 @@ def makePhoto():
         try:
             initial_time = getTimer()
             data_photo = calculate_areascaling(nameUltimatePhoto)
-            times.append(getTimer() - initial_time)
+            times.append(str(getTimer() - initial_time))
 
             initial_time = getTimer()
             value = machineLearning(data_photo)[0]
-            times.append(getTimer() - initial_time)
+            times.append(str(getTimer() - initial_time))
             
 
             if(value == 1.):
