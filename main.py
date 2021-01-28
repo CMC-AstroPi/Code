@@ -141,7 +141,7 @@ def getPosition():
     string = ""
     pos = (getLatitude(), getLongitude())
     location = rg.search(pos)
-    return "lat"+str(location[lat])+"-"+"lon"+str(location[lon])+"-"+"city-​​name"+str(location[name])
+    return "lat: "+str(location[0]["lat"])+"-"+"lon: "+str(location[0]["lon"])+"-"+"city-name: "+str(location[0]["name"])
 # -------------------------------------------------------
 
 # function to get date and time
