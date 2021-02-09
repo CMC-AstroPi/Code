@@ -23,29 +23,30 @@ import joblib
 FUNCTION CREATION
 """
 # function to extract data from the image
-def calculate_areascaling(imagefile, plot = False):
+def calculate_areascaling(imagefile):
     img = cv.imread(imagefile, cv.IMREAD_COLOR)
     height,width=img.shape[:2]
     start_row,start_col=int(height*0.2),int(width*0.2)
-    end_row,end_col=int(height*0.8),int(width*0.8)#taglia il bordo
+    end_row,end_col=int(height*0.8),int(width*0.8)
     cropped=img[start_row:end_row,start_col:end_col]
     gray_img = cv.cvtColor(cropped, cv.COLOR_BGR2GRAY)
     img_area = np.shape(gray_img)[0]*np.shape(gray_img)[1]
     ret,thresh = cv.threshold(gray_img,130,255,cv.THRESH_BINARY)
     _, contours, _ = cv.findContours(thresh, cv.RETR_LIST, cv.CHAIN_APPROX_NONE )
-    contours = [c for c in contours if cv.arcLength(c,False)>50]
-    if plot:
-        cv.drawContours(cropped, contours, -1, (0, 255, 0), 3)
-        plt.figure(figsize=(10,10))
-        plt.imshow(cropped)
-        plt.show()
-    tot_area = np.sum([cv.contourArea(cnt) for cnt in contours])
-    tot_perimeter = np.sum([cv.arcLength(cnt,True) for cnt in contours])
-    scaling = [np.log(cv.contourArea(cnt))/np.log(cv.arcLength(cnt,True)) for cnt in contours]
-    mean_scaling = np.average(scaling)
-    tot_num = len(contours)
-    num_ge_11 = len([s for s in scaling if s >= 1.1])
-    return [tot_perimeter/tot_num, tot_area/tot_num, mean_scaling, num_ge_11]
+    if len(contours)>0:
+        contours = [c for c in contours if cv.arcLength(c,False)>50]
+    else:
+        contours = []
+    if len(contours)>0:   
+        tot_area = np.sum([cv.contourArea(cnt) for cnt in contours])
+        tot_perimeter = np.sum([cv.arcLength(cnt,True) for cnt in contours])
+        scaling = [np.log(cv.contourArea(cnt))/np.log(cv.arcLength(cnt,True)) for cnt in contours]
+        mean_scaling = np.average(scaling)
+        tot_num = len(contours)
+        num_ge_11 = len([s for s in scaling if s >= 1.1])
+        return [tot_perimeter/tot_num, tot_area/tot_num, mean_scaling, num_ge_11]
+    else:
+        return [0.0, 0.0 ,0.0 ,0.0]
 # -------------------------------------------------------
 
 # image extractions from the folder
