@@ -95,7 +95,7 @@ sensor = SenseHat()
 numberPhoto = 0
 camera = PiCamera()
 camera.resolution = (2592, 1944)
-TIME_BETWEEN_TWO_SHOTS = 25
+TIME_BETWEEN_TWO_SHOTS = 2
 # -------------------------------------------------------
 
 
@@ -165,11 +165,11 @@ def getMagnetometricSensor():
 
 # function to create the name of the photo
 def createNamePhoto():
-    return('-img_'+str(getNumerPhoto())+'.png')
+    return('-img_'+str(getNumerPhoto())+'.jpeg')
 # -------------------------------------------------------
 
 # function to convert images into data for machine learning
-def calculate_areascaling(imagefile, plot = False):
+def calculate_areascaling(imagefile):
     img = cv.imread(imagefile, cv.IMREAD_COLOR)
     height,width=img.shape[:2]
     start_row,start_col=int(height*0.2),int(width*0.2)
@@ -179,39 +179,47 @@ def calculate_areascaling(imagefile, plot = False):
     img_area = np.shape(gray_img)[0]*np.shape(gray_img)[1]
     ret,thresh = cv.threshold(gray_img,130,255,cv.THRESH_BINARY)
     _, contours, _ = cv.findContours(thresh, cv.RETR_LIST, cv.CHAIN_APPROX_NONE )
-    contours = [c for c in contours if cv.arcLength(c,False)>50]
-    if plot:
-        cv.drawContours(cropped, contours, -1, (0, 255, 0), 3)
-        plt.figure(figsize=(10,10))
-        plt.imshow(cropped)
-        plt.show()
-    tot_area = np.sum([cv.contourArea(cnt) for cnt in contours])
-    tot_perimeter = np.sum([cv.arcLength(cnt,True) for cnt in contours])
-    scaling = [np.log(cv.contourArea(cnt))/np.log(cv.arcLength(cnt,True)) for cnt in contours]
-    mean_scaling = np.average(scaling)
-    tot_num = len(contours)
-    num_ge_11 = len([s for s in scaling if s >= 1.1])
-    return [tot_perimeter/tot_num, tot_area/tot_num, mean_scaling, num_ge_11]
+    if len(contours)>0:
+        contours = [c for c in contours if cv.arcLength(c,False)>50]
+    else:
+        contours = []
+    if len(contours)>0:   
+        tot_area = np.sum([cv.contourArea(cnt) for cnt in contours])
+        tot_perimeter = np.sum([cv.arcLength(cnt,True) for cnt in contours])
+        scaling = [np.log(cv.contourArea(cnt))/np.log(cv.arcLength(cnt,True)) for cnt in contours]
+        mean_scaling = np.average(scaling)
+        tot_num = len(contours)
+        num_ge_11 = len([s for s in scaling if s >= 1.1])
+        return [tot_perimeter/tot_num, tot_area/tot_num, mean_scaling, num_ge_11]
+    else:
+        return [0.0, 0.0 ,0.0 ,0.0]
 # -------------------------------------------------------
 
 # image capture function 
 def makePhoto():
+    times = []
     nameUltimatePhoto = createNamePhoto()
 
     # photo capture
     try:
-        camera.capture(nameUltimatePhoto)
+        camera.capture(nameUltimatePhoto, format='jpeg')
     except Exception as e:
         file_info_error.error("photo capture error")
 
     # Convert the color from RGB to Grayscale
     img = cv.imread(nameUltimatePhoto)
+    try:
+        v_day = is_day(img)
+    except Exception as e:
+            file_info_error.error("is_day error")
 
-    if(is_day(img)):
+    if(v_day):
 
         # machine learning
         try:
-            value = machineLearning(calculate_areascaling(nameUltimatePhoto))[0]
+            data_photo = calculate_areascaling(nameUltimatePhoto)
+
+            value = machineLearning(data_photo)[0]            
 
             if(value == 1.):
                 new_name = 'low_clouds'
@@ -227,6 +235,7 @@ def makePhoto():
         os.remove(nameUltimatePhoto)
         global numberPhoto
         numberPhoto -= 1
+    file_info_time.info(", %d, %s", numberPhoto, str(times))
 
     sleep(TIME_BETWEEN_TWO_SHOTS)
 # -------------------------------------------------------
