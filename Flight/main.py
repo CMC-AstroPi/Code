@@ -250,7 +250,6 @@ def machineLearning(img):
     lista = []
     lista.append(img)
     result = loaded_rf.predict(lista)
-    print(result)
     return result
 # -------------------------------------------------------
 
@@ -300,7 +299,6 @@ def is_day(img, size_percentage=30, min_threshold=80):
     gray_avg_value = cv.cvtColor(average_value, cv.COLOR_BGR2GRAY)
     #remove single-dimensional entries from the shape of the numpy array
     gray_avg_value = np.squeeze(gray_avg_value)
-    print(gray_avg_value >= min_threshold)
     # Return True if the gray_avg value
     return gray_avg_value >= min_threshold
 # -------------------------------------------------------
