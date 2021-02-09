@@ -197,7 +197,6 @@ def calculate_areascaling(imagefile):
 
 # image capture function 
 def makePhoto():
-    times = []
     nameUltimatePhoto = createNamePhoto()
 
     # photo capture
@@ -235,7 +234,6 @@ def makePhoto():
         os.remove(nameUltimatePhoto)
         global numberPhoto
         numberPhoto -= 1
-    file_info_time.info(", %d, %s", numberPhoto, str(times))
 
     sleep(TIME_BETWEEN_TWO_SHOTS)
 # -------------------------------------------------------
