@@ -95,7 +95,7 @@ sensor = SenseHat()
 numberPhoto = 0
 camera = PiCamera()
 camera.resolution = (2592, 1944)
-TIME_BETWEEN_TWO_SHOTS = 2
+TIME_BETWEEN_TWO_SHOTS = 12
 # -------------------------------------------------------
 
 
